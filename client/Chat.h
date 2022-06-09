@@ -1,7 +1,27 @@
 #pragma once
+#pragma comment (lib, "ws2_32.lib")
 #include <vector>
 #include <memory>
 #include "Message.h"
+
+#include <iostream>
+#include <cstdio>
+#include <stdio.h>
+#if defined(__linux__)
+#include <sys/utsname.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#elif defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#include <VersionHelpers.h>
+#include <WS2tcpip.h>
+#include <winsock2.h>
+#endif
+
+#define MESSAGE_LENGTH 1024 // ћаксимальный размер буфера дл€ данных
+#define PORT 7777 // Ѕудем использовать этот номер порта
 
 class Chat
 {
@@ -19,8 +39,9 @@ class Chat
 	void signUp();
 	void login();
 
-	void addCommonMessage();
-	void showCommonChat();
+	//void addCommonMessage();
+	//void showCommonChat();
+	void comChat();
 	void addUserMessage();
 	void showUserChat();
 	void changeUser(); // измен€ет им€ или пароль пользовател€

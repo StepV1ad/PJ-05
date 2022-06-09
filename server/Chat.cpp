@@ -1,6 +1,10 @@
 #include <iostream>
 #include "Chat.h"
 
+struct sockaddr_in serveraddress, client;
+socklen_t length;
+int socket_file_descriptor, connection, bind_status, connection_status;
+
 bool Chat::checkLogin(const std::string& login)
 {
 	for (auto& user : users_)
@@ -99,26 +103,74 @@ void Chat::login()
 	} while (flag == false);
 }
 
-void Chat::addCommonMessage()
+/*void Chat::addCommonMessage()
 {
+	char message[MESSAGE_LENGTH];
 	std::string text;
 	std::cout << "Text for all: ";
 	std::cin.ignore();
 	getline(std::cin, text);
 	std::cout << std::endl;
 	commonChat_.emplace_back(Message{ currentUser_->getUserName(), "all", text });
+
+	strcpy(message, text.c_str());
+	bzero(message, sizeof(message));
+	ssize_t bytes = write(connection, message, sizeof(message));
+	if (bytes >= 0)
+		std::cout << "Data send to the server successfully.!" << std::endl;
+}*/
+
+void Chat::comChat()
+{
+	char message[MESSAGE_LENGTH];
+	std::string text;
+	std::cout << "--- Chat ---" << std::endl;
+	while (1) {
+
+		bzero(message, MESSAGE_LENGTH);
+		read(connection, message, sizeof(message));
+		if (strncmp("end", message, 3) == 0) {
+			std::cout << "Client Exited." << std::endl;
+			std::cout << "Server is Exiting..!" << std::endl;
+			std::cout << "---------" << std::endl << std::endl;
+			break;
+		}
+		std::cout << "Data received from client: " << message << std::endl;
+		bzero(message, MESSAGE_LENGTH);
+		std::cout << "Enter the message you want to send to the client: " << std::endl;
+		
+		std::cin.ignore();
+		getline(std::cin, text);
+		//std::cin.getline(message, MESSAGE_LENGTH);
+		//commonChat_.emplace_back(Message{ currentUser_->getUserName(), "all", text });
+
+		strcpy(message, text.c_str());
+		
+		//std::cin >> message;
+		ssize_t bytes = write(connection, message, sizeof(message));
+		//write(connection, message, sizeof(message));
+		// Если передали >= 0  байт, значит пересылка прошла успешно
+		if (bytes >= 0) 
+			std::cout << "Data successfully sent to the client!" << std::endl;
+		
+	}
 }
 
-void Chat::showCommonChat()
+/*void Chat::showCommonChat()
 {
+	char message[MESSAGE_LENGTH];
 	std::cout << "--- Chat ---" << std::endl;
 	for (auto& mess : commonChat_)
 	{
 		std::cout << "Message from " << mess.getFrom() << std::endl;
 		std::cout << "text for all: " << mess.getText() << std::endl;
 	}
-	std::cout << "---------" << std::endl;
-}
+
+	bzero(message, sizeof(message));
+	read(connection, message, sizeof(message));
+	std::cout << "Data received from server: " << message << std::endl;
+	//std::cout << "---------" << std::endl;
+}*/
 
 void Chat::addUserMessage()
 {
@@ -363,11 +415,10 @@ void Chat::showUserMenu()
 		{
 			std::cout << "User menu \n"
 				" (1)Show common chat \n"
-				" (2)Add common message \n"
-				" (3)Show user chat \n"
-				" (4)Add user message \n"
-				" (5)Change user name or password \n"
-				" (6)Show all users \n"
+				" (2)Show user chat \n"
+				" (3)Add user message \n"
+				" (4)Change user name or password \n"
+				" (5)Show all users \n"
 				" (0)Logout \n"
 				"select operation: ";
 			std::cin >> operation;
@@ -375,21 +426,18 @@ void Chat::showUserMenu()
 			switch (operation)
 			{
 			case '1':
-				showCommonChat();
+				comChat();
 				break;
 			case '2':
-				addCommonMessage();
-				break;
-			case '3':
 				showUserChat();
 				break;
-			case '4':
+			case '3':
 				addUserMessage();
 				break;
-			case '5':
+			case '4':
 				changeUser();
 				break;
-			case '6':
+			case '5':
 				showUsers();
 				break;
 			case '0':
@@ -408,11 +456,10 @@ void Chat::showUserMenu()
 		{
 			std::cout << "User menu \n"
 				" (1)Show common chat \n"
-				" (2)Add common message \n"
-				" (3)Show user chat \n"
-				" (4)Add user message \n"
-				" (5)Print all information about users \n"
-				" (6)Show private chat \n"
+				" (2)Show user chat \n"
+				" (3)Add user message \n"
+				" (4)Print all information about users \n"
+				" (5)Show private chat \n"
 				" (0)Logout \n"
 				"select operation: ";
 			std::cin >> operation;
@@ -420,21 +467,18 @@ void Chat::showUserMenu()
 			switch (operation)
 			{
 			case '1':
-				showCommonChat();
+				comChat();
 				break;
 			case '2':
-				addCommonMessage();
-				break;
-			case '3':
 				showUserChat();
 				break;
-			case '4':
+			case '3':
 				addUserMessage();
 				break;
-			case '5':
+			case '4':
 				printAllInf();
 				break;
-			case '6':
+			case '5':
 				showPrivateChat();
 				break;
 			case '0':

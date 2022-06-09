@@ -1,0 +1,12 @@
+﻿  Проверка исходных файлов
+  Удаленное копирование исходных файлов в "192.168.98.128"
+  Проверка архитектуры
+  Проверка архитектуры
+  Запуск удаленной сборки.
+  Компиляция исходных файлов:
+  Chat.cpp
+D:\MVS_project\SkillFactory\Dz20\Linux\Client\Chat.h(2): warning : ignoring #pragma comment  [-Wunknown-pragmas]
+D:\MVS_project\SkillFactory\Dz20\Linux\Client\Chat.h(2): warning :     2 | #pragma comment (lib, "ws2_32.lib")
+D:\MVS_project\SkillFactory\Dz20\Linux\Client\Chat.h(2): warning :       |
+  Связывание объектов
+  Client.vcxproj -> D:\MVS_project\SkillFactory\Dz20\Linux\Client\bin\x64\Debug\Client.out
