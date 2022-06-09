@@ -1,0 +1,13 @@
+﻿  Chat.cpp
+  main.cpp
+D:\MVS_project\SkillFactory\Dz20\server\main.cpp(30,6): warning C4551: в вызове функции отсутствует список аргументов
+D:\MVS_project\SkillFactory\Dz20\server\main.cpp(42,33): warning C4244: =: преобразование "SOCKET" в "int", возможна потеря данных
+D:\MVS_project\SkillFactory\Dz20\server\main.cpp(40,7): warning C4101: message: неиспользованная локальная переменная
+D:\MVS_project\SkillFactory\Dz20\server\main.cpp(38,30): warning C4101: connection: неиспользованная локальная переменная
+D:\MVS_project\SkillFactory\Dz20\server\main.cpp(39,21): warning C4101: serveraddress: неиспользованная локальная переменная
+D:\MVS_project\SkillFactory\Dz20\server\main.cpp(39,36): warning C4101: client: неиспользованная локальная переменная
+  Message.cpp
+  User.cpp
+  Создание кода...
+main.obj : error LNK2019: ссылка на неразрешенный внешний символ socket в функции main.
+D:\MVS_project\SkillFactory\Dz20\server\x64\Debug\Dz20.exe : fatal error LNK1120: неразрешенных внешних элементов: 1
