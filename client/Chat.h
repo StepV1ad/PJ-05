@@ -20,8 +20,8 @@
 #include <winsock2.h>
 #endif
 
-#define MESSAGE_LENGTH 1024 // Максимальный размер буфера для данных
-#define PORT 7777 // Будем использовать этот номер порта
+#define MESSAGE_LENGTH 1024 // РњР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СЂР°Р·РјРµСЂ Р±СѓС„РµСЂР° РґР»СЏ РґР°РЅРЅС‹С…
+#define PORT 7777 // Р‘СѓРґРµРј РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ СЌС‚РѕС‚ РЅРѕРјРµСЂ РїРѕСЂС‚Р°
 
 class Chat
 {
@@ -32,6 +32,9 @@ class Chat
 	int idStorage_ = 0;
 	bool chatWork_ = false;
 	bool mainMenuWork_ = false;
+	int socket_file_descriptor, connection;
+	struct sockaddr_in serveraddress, client;
+	char message[MESSAGE_LENGTH];
 
 	bool checkLogin(const std::string& login);
 	bool checkName(const std::string& name);
@@ -39,13 +42,11 @@ class Chat
 	void signUp();
 	void login();
 
-	//void addCommonMessage();
-	//void showCommonChat();
 	void comChat();
 	void addUserMessage();
 	void showUserChat();
-	void changeUser(); // изменяет имя или пароль пользователя
-	void showUsers(); // отображает список имён всех пользователей 
+	void changeUser(); // РёР·РјРµРЅСЏРµС‚ РёРјСЏ РёР»Рё РїР°СЂРѕР»СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
+	void showUsers(); // РѕС‚РѕР±СЂР°Р¶Р°РµС‚ СЃРїРёСЃРѕРє РёРјС‘РЅ РІСЃРµС… РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ 
 	void readUserFile();
 	void wrightUserFile();
 	void readMessageFile();
@@ -53,11 +54,12 @@ class Chat
 	void readCommonChatFile();
 	void wrightCommonChatFile();
 
-	void admin(); // зарегестрированный пользователь с отдельным меню // login admin, password 13579
-	void printAllInf(); // отображает всю информацию пользователей
-	void showPrivateChat(); // просмотр чатов пользователей
+	void admin(); // Р·Р°СЂРµРіРµСЃС‚СЂРёСЂРѕРІР°РЅРЅС‹Р№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ СЃ РѕС‚РґРµР»СЊРЅС‹Рј РјРµРЅСЋ // login admin, password 13579
+	void printAllInf(); // РѕС‚РѕР±СЂР°Р¶Р°РµС‚ РІСЃСЋ РёРЅС„РѕСЂРјР°С†РёСЋ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№
+	void showPrivateChat(); // РїСЂРѕСЃРјРѕС‚СЂ С‡Р°С‚РѕРІ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№
 
 public:
+	void socketTCP();
 	void start();
 	bool chatWork() const { return chatWork_; }
 	bool mainMenuWork() const { return mainMenuWork_; }
