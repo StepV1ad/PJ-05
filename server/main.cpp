@@ -1,8 +1,4 @@
-﻿#include "Chat.h"
-
-extern struct sockaddr_in serveraddress, client;
-extern socklen_t length;
-extern int socket_file_descriptor, connection, bind_status, connection_status;
+#include "Chat.h"
 
 int main()
 {
@@ -24,34 +20,7 @@ int main()
 	else if (IsWindowsVistaOrGreater())  std::cout << "Vista" << std::endl;
 	else if (IsWindowsXPOrGreater())  std::cout << "XP" << std::endl;
 #endif
-
-    socket_file_descriptor = socket(AF_INET, SOCK_STREAM, 0);
-    if (socket_file_descriptor == -1) {
-        std::cout << "Socket creation failed.!" << std::endl;
-        exit(1);
-    }
-    serveraddress.sin_addr.s_addr = htonl(INADDR_ANY);
-    serveraddress.sin_port = htons(PORT);
-    serveraddress.sin_family = AF_INET;
-    bind_status = bind(socket_file_descriptor, (struct sockaddr*)&serveraddress, sizeof(serveraddress));
-    if (bind_status == -1) {
-        std::cout << "Socket binding failed.!" << std::endl;
-        exit(1);
-    }
-    // Поставим сервер на прием данных 
-    connection_status = listen(socket_file_descriptor, 5);
-    if (connection_status == -1) {
-        std::cout << "Socket is unable to listen for new connections.!" << std::endl;
-        exit(1);
-    }
-    else { std::cout << "Server is listening for new connection: " << std::endl; }
-    length = sizeof(client);
-    connection = accept(socket_file_descriptor, (struct sockaddr*)&client, &length);
-    if (connection == -1) {
-        std::cout << "Server is unable to accept the data from client.!" << std::endl;
-        exit(1);
-    }
-
+	    
 	Chat chat;
 	chat.start();
 	while (chat.chatWork())
@@ -62,6 +31,5 @@ int main()
 			chat.showUserMenu();
 		}
 	}
-	close(socket_file_descriptor);
 	return 0;
 }
