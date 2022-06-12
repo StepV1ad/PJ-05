@@ -1,9 +1,35 @@
 #include <iostream>
 #include "Chat.h"
 
-struct sockaddr_in serveraddress, client;
-socklen_t length;
-int socket_file_descriptor, connection, bind_status, connection_status;
+void Chat::socketTCP()
+{
+	socket_file_descriptor = socket(AF_INET, SOCK_STREAM, 0);
+	if (socket_file_descriptor == -1) {
+		std::cout << "Socket creation failed.!" << std::endl;
+		exit(1);
+	}
+	serveraddress.sin_addr.s_addr = htonl(INADDR_ANY);
+	serveraddress.sin_port = htons(PORT);
+	serveraddress.sin_family = AF_INET;
+	bind_status = bind(socket_file_descriptor, (struct sockaddr*)&serveraddress, sizeof(serveraddress));
+	if (bind_status == -1) {
+		std::cout << "Socket binding failed.!" << std::endl;
+		exit(1);
+	}
+	
+	connection_status = listen(socket_file_descriptor, 5);
+	if (connection_status == -1) {
+		std::cout << "Socket is unable to listen for new connections.!" << std::endl;
+		exit(1);
+	}
+	else { std::cout << "Server is listening for new connection: " << std::endl; }
+	length = sizeof(client);
+	connection = accept(socket_file_descriptor, (struct sockaddr*)&client, &length);
+	if (connection == -1) {
+		std::cout << "Server is unable to accept the data from client.!" << std::endl;
+		exit(1);
+	}
+}
 
 bool Chat::checkLogin(const std::string& login)
 {
@@ -103,23 +129,6 @@ void Chat::login()
 	} while (flag == false);
 }
 
-/*void Chat::addCommonMessage()
-{
-	char message[MESSAGE_LENGTH];
-	std::string text;
-	std::cout << "Text for all: ";
-	std::cin.ignore();
-	getline(std::cin, text);
-	std::cout << std::endl;
-	commonChat_.emplace_back(Message{ currentUser_->getUserName(), "all", text });
-
-	strcpy(message, text.c_str());
-	bzero(message, sizeof(message));
-	ssize_t bytes = write(connection, message, sizeof(message));
-	if (bytes >= 0)
-		std::cout << "Data send to the server successfully.!" << std::endl;
-}*/
-
 void Chat::comChat()
 {
 	char message[MESSAGE_LENGTH];
@@ -128,7 +137,7 @@ void Chat::comChat()
 	while (1) {
 
 		bzero(message, MESSAGE_LENGTH);
-		read(connection, message, sizeof(message));
+		recv(connection, message, sizeof(message), 0);
 		if (strncmp("end", message, 3) == 0) {
 			std::cout << "Client Exited." << std::endl;
 			std::cout << "Server is Exiting..!" << std::endl;
@@ -139,38 +148,17 @@ void Chat::comChat()
 		bzero(message, MESSAGE_LENGTH);
 		std::cout << "Enter the message you want to send to the client: " << std::endl;
 		
-		std::cin.ignore();
+		//std::cin.ignore();
 		getline(std::cin, text);
-		//std::cin.getline(message, MESSAGE_LENGTH);
-		//commonChat_.emplace_back(Message{ currentUser_->getUserName(), "all", text });
-
+		
 		strcpy(message, text.c_str());
 		
-		//std::cin >> message;
-		ssize_t bytes = write(connection, message, sizeof(message));
-		//write(connection, message, sizeof(message));
-		// Если передали >= 0  байт, значит пересылка прошла успешно
+		ssize_t bytes = send(connection, message, sizeof(message), 0);
 		if (bytes >= 0) 
 			std::cout << "Data successfully sent to the client!" << std::endl;
 		
 	}
 }
-
-/*void Chat::showCommonChat()
-{
-	char message[MESSAGE_LENGTH];
-	std::cout << "--- Chat ---" << std::endl;
-	for (auto& mess : commonChat_)
-	{
-		std::cout << "Message from " << mess.getFrom() << std::endl;
-		std::cout << "text for all: " << mess.getText() << std::endl;
-	}
-
-	bzero(message, sizeof(message));
-	read(connection, message, sizeof(message));
-	std::cout << "Data received from server: " << message << std::endl;
-	//std::cout << "---------" << std::endl;
-}*/
 
 void Chat::addUserMessage()
 {
@@ -243,7 +231,7 @@ void Chat::changeUser()
 
 void Chat::showUsers()
 {
-	for (size_t inf = 1; inf < users_.size(); ++inf) // не используется foreach для сокрытия admin
+	for (size_t inf = 1; inf < users_.size(); ++inf) // РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ foreach РґР»СЏ СЃРѕРєСЂС‹С‚РёСЏ admin
 	{
 		std::cout << "User #" << inf << ": " << users_[inf].getUserName() << "\n";
 	}
@@ -306,7 +294,7 @@ void Chat::wrightCommonChatFile()
 			commonChat_file << commonChat.getFrom() << " " << commonChat.getTo() << " " << commonChat.getText() << std::endl;
 }
 
-void Chat::admin() // доп пользователь, регистрируемый при старте работы чата
+void Chat::admin() // РґРѕРї РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ, СЂРµРіРёСЃС‚СЂРёСЂСѓРµРјС‹Р№ РїСЂРё СЃС‚Р°СЂС‚Рµ СЂР°Р±РѕС‚С‹ С‡Р°С‚Р°
 {
 	for (auto& user : users_)
 	{
@@ -361,6 +349,7 @@ void Chat::showPrivateChat()
 
 void Chat::start()
 {
+	socketTCP();
 	chatWork_ = true;
 	readUserFile();
 	readMessageFile();
@@ -396,6 +385,7 @@ void Chat::showLoginMenu()
 			wrightUserFile();
 			wrightMessageFile();
 			wrightCommonChatFile();
+			close(socket_file_descriptor);
 			chatWork_ = false;
 			break;
 		default:
