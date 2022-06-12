@@ -20,7 +20,6 @@ int main()
 	else if (IsWindowsVistaOrGreater())  std::cout << "Vista" << std::endl;
 	else if (IsWindowsXPOrGreater())  std::cout << "XP" << std::endl;
 #endif
-
 	Chat chat;
 	chat.start();
 	while (chat.chatWork())
